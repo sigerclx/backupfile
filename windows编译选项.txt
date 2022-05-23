@@ -1,0 +1,1 @@
+﻿pyinstaller -F -c --icon=back32.ico backup3.py
