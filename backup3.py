@@ -10,7 +10,7 @@ from func.File_opt import *
 def main():
     Param_init()
     ini_init()
-    Write_log('中一备份第三版 2021-05-22\n')
+    Write_log('中一备份第3.1版 2022-05-23 \n')
 
     times = 0
     while True:

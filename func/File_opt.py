@@ -50,6 +50,19 @@ def Delete_file(file):
     else:
         Copy_file(file)  # 如果目标文件不存在，先备份，本次不删除
 
+# 获取当前目录下的文件和目录
+def folderfilelist(folder):
+    folderlists =[]
+    filelists = []
+
+    for file in os.listdir(folder):
+        file = os.path.join(folder,file)
+        if os.path.isdir(file):
+            folderlists.append(file)
+        else:
+            filelists.append(file)
+
+    return filelists,folderlists
 
 
 def Delete_folder(path):
@@ -63,6 +76,25 @@ def Delete_folder(path):
             #print(e)
             Write_log(e)
 
+def Delete_folderAndfile(path):
+    filelists,folderlists = folderfilelist(path)
+    for file in filelists:
+        print('deleting file in NG folder ' + path + ' ...')
+        Write_log('deleting file in NG folder ' + path)
+        os.remove(file)
+    for folder in folderlists:
+        Delete_folderAndfile(folder)
+    # 如果上面文件都删除了，那就把目录也删除掉
+    if os.path.isdir(path):
+        try:
+            os.rmdir(path)  # 删空目录,如果目录里文件不空,则不能删除
+            print('deleting NG folder' + path + ' ...')
+            Write_log('deleting folder ' + path)
+        except Exception as e:
+            #print(e)
+            Write_log(e)
+
+
 def Scan_path(rootDir):
     rootDir = r'' + rootDir
     curr_date = (datetime.datetime.now()).strftime("%Y\%m\%d")
@@ -70,8 +102,17 @@ def Scan_path(rootDir):
     # 只遍历当前文件夹下的文件夹和文件
     for lists in os.listdir(rootDir):
         curr_path = os.path.join(rootDir, lists)
+        nopathfolder = curr_path.split('\\')[-1]
+        #print('curr_path',curr_path,curr_path.split('\\')[-1])
         if os.path.isdir(curr_path):
+
             if curr_date in curr_path:
+                # 保护目录，不操作
+                continue
+            # NG文件夹直接删除
+            if nopathfolder.upper() == "NG":
+                #print('ng=',curr_path)
+                Delete_folderAndfile(curr_path)
                 continue
             Scan_path(curr_path)  # 递归调用自己
         else:
